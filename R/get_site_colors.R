@@ -1,0 +1,1 @@
+site_colors <- c("MGH" = "turquoise3", "CAP" = "red")

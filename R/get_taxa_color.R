@@ -1,5 +1,5 @@
 
-get_taxa_colors <- function(taxa) {
+get_taxa_colors_deprecated <- function(taxa) {
   tibble(
     taxa = taxa
   ) |> 
@@ -76,6 +76,7 @@ get_taxa_colors <- function(taxa) {
           str_detect(taxa, "LBP") ~ "#F6881F",
           str_detect(taxa, "iner") ~ "green3",
           str_detect(taxa, "jensenii") ~ "green4",
+          str_detect(taxa, "BVAB1") ~ "deeppink3",
           str_detect(taxa, "ardnerella") ~ colorRampPalette(c("dodgerblue1", "dodgerblue4"))(n()),
           str_detect(taxa, "revotella") ~ colorRampPalette(c("purple1", "purple4"))(n()),
           TRUE ~ colorRampPalette(c("turquoise3", "black"))(n())
