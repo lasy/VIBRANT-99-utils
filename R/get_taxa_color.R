@@ -7,7 +7,10 @@ get_taxa_colors <- function(taxa) {
     mutate(
       cat =
         case_when(
+          str_detect(taxa, "[Ll]acto") & str_detect(taxa, "[Oo]ther") & str_detect(taxa, "[Nn]on") ~ "Other non-Lacto",
+          str_detect(taxa, "[Ll]acto") & str_detect(taxa, "[Oo]ther") ~ "Other Lacto",
           taxa == "Other" ~ "Other",
+          str_detect(taxa, "Other") ~ "Other",
           str_detect(taxa, "crispatus") ~ "crispatus",
           str_detect(taxa, "LBP") ~ "LBP",
           str_detect(taxa, "iner") ~ "iners",
@@ -20,7 +23,9 @@ get_taxa_colors <- function(taxa) {
     mutate(
       color =
         case_when(
-          taxa == "Other" ~ "gray80",
+          cat == "Other" ~ "gray80",
+          cat == "Other non-Lacto" ~ "gray80", # "lightblue3"
+          cat == "Other Lacto" ~ "gold3",
           str_detect(taxa, "crispatus") ~ "#FDCC45",
 
           # "#ff3c00"
