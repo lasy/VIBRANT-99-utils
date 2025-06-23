@@ -1,6 +1,100 @@
 
+parts <- unlist(strsplit(getwd(), .Platform$file.sep))
+dir <- do.call(file.path, as.list(parts[1:length(parts) - 1])) |> paste0("/VIBRANT-99-utils/")
 
-get_taxa_colors <- function(taxa) {
+VIRGO_dict <- readr::read_csv(paste0(dir,"VIRGO2_taxaKey_v2_tmp.csv"), show_col_types = FALSE)
+rm(parts, dir)
+
+VIRGO_dict <- VIRGO_dict |> janitor::clean_names()
+VIRGO_dict <-
+  VIRGO_dict |>
+  dplyr::mutate(
+    regex_pattern =
+      dplyr::case_when(
+        taxa == "Lactobacillus_mulieris" ~ "[Ll]acto.mulieris",
+        taxa == "Lactobactillus_other" ~ "[Ll]acto.*[Oo]ther|[Oo]ther.*[Ll]acto",
+        taxa == "UBA629_sp005465875" ~ "UBA629.sp005465875|BVAB1",
+        taxa == "other" ~ "[Oo]ther",
+        taxa == "other_non_Lacto" ~ "[Oo]ther.*[Nn]on.*[Ll]acto|[Nn]on.*[Ll]acto.*[Oo]ther",
+        TRUE ~ taxa |>
+          stringr::str_replace("_",".") |>
+          stringr::str_remove("Lactobacillus") |>
+          stringr::str_replace("Gardnerella", "ardnerella") |>
+          stringr::str_replace("Prevotella", "revotella") |>
+          stringr::str_replace("Aerococcus", "erococcus") |>
+          stringr::str_replace("Fannyhessea", "annyhessea") |>
+          stringr::str_replace("Berryella", "erryella")
+      )
+  )
+
+
+match_taxa_to_VIRGO_dict <- function(taxa){
+  if (is.null(taxa)) return(NULL)
+
+  matched_taxa <-
+    tibble(
+      original_taxa = taxa
+    ) |>
+    mutate(
+      taxa =
+        case_when(
+          str_detect(original_taxa, "[Ll]acto") &
+            str_detect(original_taxa, "[Oo]ther") &
+            str_detect(original_taxa, "[Nn]on") ~ "other_non_Lacto",
+          original_taxa == "< 50% Lactobacillus" ~ "other_non_Lacto",
+          str_detect(original_taxa, "[Ll]acto") &
+            str_detect(original_taxa, "[Oo]ther") ~ "Lactobactillus_other",
+          str_detect(original_taxa, "[Oo]ther") ~ "other",
+          str_detect(original_taxa, "crispatus") ~ "Lactobacillus_crispatus",
+          original_taxa == "LBP" ~ "C0175A1",
+          str_detect(original_taxa, "LBP") ~ original_taxa |> str_remove("LBP") |> str_remove("strain") |> str_remove_all("\\(|\\)") |> str_remove_all(" "),
+          str_detect(original_taxa, "iner") ~ "Lactobacillus_iners",
+          str_detect(original_taxa, "BVAB1") | str_detect(original_taxa, "Ca.*L.*vaginae") ~ "UBA629_sp005465875",
+          TRUE ~ original_taxa |> str_replace_all(" ", "_")
+        )
+    ) |>
+    left_join(VIRGO_dict |> select(taxa) |> mutate(match = TRUE), by = join_by(taxa)) |>
+    mutate(match = match |> replace_na(FALSE))
+
+if (any(!matched_taxa$match)) {
+    warning(
+      stringr::str_c(
+      "The following taxa were not matched to the VIRGO dictionary: ",
+      paste(matched_taxa$original_taxa[!matched_taxa$match], collapse = ", ")
+      )
+    )
+  }
+
+  matched_taxa |> pull(taxa)
+}
+
+get_taxa_colors <- function(taxa){
+
+  tibble(
+    original_taxa = taxa,
+    taxa = match_taxa_to_VIRGO_dict(taxa)
+  ) |>
+    left_join(VIRGO_dict |> select(taxa, color), by = "taxa") |>
+    mutate(color = color |> replace_na("black")) |>
+    pull(color)
+
+}
+
+get_taxa_labels <- function(taxa){
+
+  tibble(
+    original_taxa = taxa,
+    taxa = match_taxa_to_VIRGO_dict(taxa)
+  ) |>
+    left_join(VIRGO_dict |> select(taxa, text), by = "taxa") |>
+    mutate(text = case_when(is.na(text) ~ original_taxa, TRUE ~ text)) |>
+    pull(text)
+
+}
+
+
+
+get_taxa_colors_v1 <- function(taxa) {
   tibble(
     taxa = taxa
   ) |>
