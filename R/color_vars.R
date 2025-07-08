@@ -11,4 +11,8 @@ strain_origin_colors <- strain_origin_colors$color |> magrittr::set_names(strain
 arm_colors <- readr::read_csv(paste0(dir,"arm_colors.csv"), show_col_types = FALSE)
 arm_colors <- arm_colors$color |> magrittr::set_names(arm_colors$arm)
 
+
+visit_colors <- readr::read_csv(paste0(dir,"visit_colors.csv"), show_col_types = FALSE)
+visit_colors <- visit_colors$color |> magrittr::set_names(visit_colors$visit)
+
 rm(parts, dir)
