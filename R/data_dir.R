@@ -3,8 +3,8 @@ data_dir <- function(){
   
   if (str_detect(getwd(), "laurasymul"))
     data_dir <- "/Users/laurasymul/OneDrive - UCL/Academia/Research/VIBRANT data UCLouvain/actual data/"
-  else if (str_detect(getwd(), "vermeren"))
-    data_dir <- "/Users/lvermeren/OneDrive - UCL/VIBRANT data UCLouvain/actual data/"
+  else if (str_detect(getwd(), "/laura/")) #vermeren
+    data_dir <- "/Users/laura/OneDrive - UCL/VIBRANT data UCLouvain/actual data/"
   else
     stop("You need to specify the path to the data directory in `VIBRANT-99-utils/R/data_dir.R`")
   data_dir
