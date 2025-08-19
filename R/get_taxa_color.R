@@ -53,7 +53,7 @@ match_taxa_to_VIRGO_dict <- function(taxa){
           TRUE ~ original_taxa |> str_replace_all(" ", "_")
         )
     ) |>
-    left_join(VIRGO_dict |> select(taxa) |> mutate(match = TRUE), by = join_by(taxa)) |>
+    left_join(VIRGO_dict |> dplyr::select(taxa) |> mutate(match = TRUE), by = join_by(taxa)) |>
     mutate(match = match |> replace_na(FALSE))
 
 if (any(!matched_taxa$match)) {
@@ -74,7 +74,7 @@ get_taxa_colors <- function(taxa){
     original_taxa = taxa,
     taxa = match_taxa_to_VIRGO_dict(taxa)
   ) |>
-    left_join(VIRGO_dict |> select(taxa, color), by = "taxa") |>
+    left_join(VIRGO_dict |> dplyr::select(taxa, color), by = "taxa") |>
     mutate(color = color |> replace_na("black")) |>
     pull(color)
 
@@ -86,7 +86,7 @@ get_taxa_labels <- function(taxa){
     original_taxa = taxa,
     taxa = match_taxa_to_VIRGO_dict(taxa)
   ) |>
-    left_join(VIRGO_dict |> select(taxa, text), by = "taxa") |>
+    left_join(VIRGO_dict |> dplyr::select(taxa, text), by = "taxa") |>
     mutate(text = case_when(is.na(text) ~ original_taxa, TRUE ~ text)) |>
     pull(text)
 
