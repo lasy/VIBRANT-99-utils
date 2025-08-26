@@ -14,8 +14,8 @@ data_dir <- function(){
 dropbox_dir <- function(){
   if (str_detect(getwd(), "laurasymul"))
     dropbox_dir <- "/Users/laurasymul/Dropbox/Academia/Projects/VIBRANT Study Files/"
-  else if (str_detect(getwd(), "vermeren"))
-    dropbox_dir <- "/Users/lvermeren/Dropbox/VIBRANT Study Files/"
+  else if (str_detect(getwd(), "/laura/"))
+    dropbox_dir <- "/Users/laura/Dropbox/VIBRANT Study Files/"
   else
     stop("Hello! You need to specify the path to the VIBRANT Dropbox directory in the function `dropbox_dir` in the VIBRANT-99-utils/R/data_dir.R file.")
   dropbox_dir
