@@ -74,8 +74,16 @@ get_taxa_colors <- function(taxa){
     original_taxa = taxa,
     taxa = match_taxa_to_VIRGO_dict(taxa)
   ) |>
-    left_join(VIRGO_dict |> dplyr::select(taxa, color), by = "taxa") |>
-    mutate(color = color |> replace_na("black")) |>
+    dplyr::left_join(VIRGO_dict |> select(taxa, color), by = "taxa") |>
+    group_by(is.na(color)) |> 
+    mutate(
+      color = # color |> replace_na("black")
+        case_when(
+          !is.na(color) ~ color,
+          is.na(color) ~ hsv(h = row_number()/n(), s = 0.8, v = 0.5)
+        )
+      ) |>
+    ungroup() |> 
     pull(color)
 
 }
