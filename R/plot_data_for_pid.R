@@ -1,5 +1,5 @@
 
-plot_data_for_pid <- function(selected_pid, mae_sub){
+plot_data_for_pid <- function(selected_pid, mae_sub, add_daily_qPCR = FALSE){
   
   mae_selected_pid <- mae_sub[, mae_sub$pid == selected_pid]
   coldata <- mae_selected_pid@colData |> as_tibble()
@@ -35,6 +35,18 @@ plot_data_for_pid <- function(selected_pid, mae_sub){
     mae_selected_pid[["qPCR"]] |> 
     as_tibble() |> 
     dplyr::left_join(coldata |> select(uid, pid, visit_code), by = join_by(uid)) 
+  
+  if (add_daily_qPCR) {
+    qPCR_daily <-
+      mae_sub[["qPCR_daily"]] |>
+      as_tibble() |>
+      dplyr::left_join(coldata |> select(uid, pid, visit_code), by = join_by(uid)) 
+    
+    qPCR_ <- 
+      qPCR_ |> 
+      bind_rows(qPCR_daily)
+  }
+    
   
   if (any(qPCR_$copies_per_swab_med[!is.na(qPCR_$LBP)] > 0, na.rm = TRUE)) {
     qPCR_ <- 
