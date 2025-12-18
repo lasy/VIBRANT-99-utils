@@ -72,7 +72,7 @@ match_taxa_to_VIRGO_dict <- function(taxa){
           original_taxa == "LBP" ~ "C0175A1",
           str_detect(original_taxa, "LBP") ~ original_taxa |> str_remove("LBP") |> str_remove("strain") |> str_remove_all("\\(|\\)") |> str_remove_all(" "),
           str_detect(original_taxa, "iner") ~ "Lactobacillus_iners",
-          str_detect(original_taxa, "BVAB1") | str_detect(original_taxa, "Ca.*L.*vaginae") ~ "UBA629_sp005465875",
+          str_detect(original_taxa, "BVAB1") | str_detect(original_taxa, "Ca.*L.*vaginae") | str_detect(original_taxa, "UBA629_sp005465875") ~ "UBA629_sp005465875",
           TRUE ~ original_taxa |> str_replace_all(" ", "_")
         )
     ) |>
