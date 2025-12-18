@@ -25,6 +25,29 @@ VIRGO_dict <-
           stringr::str_replace("Fannyhessea", "annyhessea") |>
           stringr::str_replace("Berryella", "erryella")
       )
+  ) |> 
+  dplyr::mutate(
+    label = case_when(
+      text == "Ca. L. vaginae (BVAB1)" ~ "*Ca.* L. vaginae (BVAB1)",
+      text == "other Lacto." ~ "Other *Lacto.*",
+      text == "Other" ~ "Other",
+      text == "Other non-Lacto." ~ "Other non-*Lacto.*",
+      text == "P. sp000758925" ~ "*P.* sp000758925",
+      text == "P. spNov33" ~ "*P.* spNov33",
+      text == "N. sp004136275" ~ "*N.* sp004136275",
+      text == "D. sp001553355" ~ "*D.* sp001553355",
+      text == "B. sp001552935" ~ "*B.* sp001552935",
+      text == "G. sp003585845" ~ "*G.* sp003585845",
+      TRUE ~ 
+        text |> str_replace(
+          "(^|\\s)([A-Z])\\.\\s+([a-z][a-z0-9_-]*)(\\b)",
+          "\\1*\\2.* *\\3*\\4"
+        ) |>
+        str_replace(
+          "^([A-Z][a-z]{2,})$",
+          "*\\1*"
+        )
+    )
   )
 
 
@@ -94,9 +117,9 @@ get_taxa_labels <- function(taxa){
     original_taxa = taxa,
     taxa = match_taxa_to_VIRGO_dict(taxa)
   ) |>
-    left_join(VIRGO_dict |> dplyr::select(taxa, text), by = "taxa") |>
-    mutate(text = case_when(is.na(text) ~ original_taxa, TRUE ~ text)) |>
-    pull(text)
+    left_join(VIRGO_dict |> dplyr::select(taxa, label), by = "taxa") |>
+    mutate(label = case_when(is.na(label) ~ original_taxa |> str_replace("^([^()]+?)(\\s*\\(.*\\))?$", "*\\1*\\2"), TRUE ~ label)) |>
+    pull(label)
 
 }
 
