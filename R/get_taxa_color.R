@@ -76,7 +76,7 @@ match_taxa_to_VIRGO_dict <- function(taxa){
           TRUE ~ original_taxa |> str_replace_all(" ", "_")
         )
     ) |>
-    left_join(VIRGO_dict |> dplyr::select(taxa) |> mutate(match = TRUE), by = join_by(taxa)) |>
+    dplyr::left_join(VIRGO_dict |> dplyr::select(taxa) |> mutate(match = TRUE), by = join_by(taxa)) |>
     mutate(match = match |> replace_na(FALSE))
 
 if (any(!matched_taxa$match)) {
